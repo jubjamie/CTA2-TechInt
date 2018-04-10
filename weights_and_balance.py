@@ -1,5 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
+from matplotlib.ticker import FuncFormatter
 from openpyxl import load_workbook
 import filepath1
 
@@ -52,3 +53,27 @@ big_weights = {"MTOW_w": cg_params["Q4"].value,
                "OWE_m": cg_params["Q22"].value,
                "OWE_x": cg_params["Q24"].value,
                }
+c_bar = cg_params["M7"]
+h0 = cg_params["M8"]
+
+
+def to_tons(x, pos):
+    'The two args are the value and tick position'
+    return '%1.1fT' % (x*1e-3)
+
+formatter = FuncFormatter(to_tons)
+
+
+def plotit():
+    fig = plt.figure(figsize=(10, 7))
+    ax = fig.add_subplot(1, 1, 1)
+    ax.yaxis.set_major_formatter(formatter)
+    ax.xaxis.set_ticks_position('bottom')
+    y_tails = []
+    y_heads = []
+    plt.ylabel("Mass")
+    plt.xlabel("Moment (temp)")
+    plt.ylim(big_weights["OWE_w"]*0.98, big_weights["MTOW_w"]*1.02)
+    plt.show()
+
+plotit()

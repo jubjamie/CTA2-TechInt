@@ -52,7 +52,7 @@ big_weights = {"MTOW_w": cg_params["Q4"].value,
                "OWE_w": cg_params["Q23"].value,
                "OWE_m": cg_params["Q22"].value,
                "OWE_x": cg_params["Q24"].value,
-               "MZFW": cg_file["Masses"]["E28"]
+               "MZFW": cg_file["Masses"]["E28"].value
                }
 
 ax_lims=[big_weights["OWE_w"]*0.98, big_weights["MTOW_w"]*1.02]
@@ -112,11 +112,19 @@ def mom_calc(w, x):
 def seat_loading_wa(seats=2):
     distances = []
     moms = []
+    big_dist = []
     pax_mass = (95-23) * seats  # For both window seats
-    for row in np.arange(1, 19, 1):
+    for row in np.arange(1, 21, 1):
         local_dist = ((seat_start_fwd + ((row - 1) * seat_pitch))/c_bar) - h0
         distances.append(local_dist)
+        big_dist.append(seat_start_fwd + ((row - 1) * seat_pitch))
         moms.append(pax_mass * local_dist)
+    print(seats)
+    print(big_dist)
+    print(distances)
+    print(moms)
+    print(np.mean(big_dist))
+
     return {"distances": distances, "moments": moms, "pax mass": pax_mass}
 
 
@@ -156,11 +164,20 @@ def plotit(mac_range=[0.11, 0.51]):
         # plt.annotate(mac_pos, [mac_axes(mac_pos)[0], ax_lims[1]-(0.05*(ax_lims[1]-ax_lims[0]))])
     plt.xticks(xtick_hold)
 
+
+    break_points={}
     """ This section plots static points"""
     # OWE point from CG Excel
     curr_weight = big_weights["OWE_w"]
     owe_mom = mom_calc(big_weights["OWE_w"], big_weights['OWE_x'])
     plt.plot(owe_mom, curr_weight, 'ro', markersize=10)
+
+    # Plot target pax end point
+    plt.plot(mom_calc((curr_weight+7200), 14.37), (curr_weight+7200), 'ro', markersize=10)
+
+    # Plot MZFW and MTOW
+    plt.plot([mac_axes(mac_range[0]-0.01)[0], mac_axes(mac_range[1]+0.01)[0]], [big_weights["MTOW_w"], big_weights["MTOW_w"]], 'r')
+    plt.plot([mac_axes(mac_range[0]-0.01)[0], mac_axes(mac_range[1]+0.01)[0]], [big_weights["MZFW"], big_weights["MZFW"]], 'r--')
 
 
     """ This section plots the loops front first"""
@@ -173,12 +190,14 @@ def plotit(mac_range=[0.11, 0.51]):
         curr_mom = curr_mom + row
         seat_window_loop_moms.append(curr_mom)
         seat_window_loop_weights.append(curr_weight)
+    break_points['Window Weight'] = curr_weight
 
     for row_id, row in enumerate(seat_fwd["moments"]):
         curr_weight = curr_weight + seat_fwd["pax mass"]
         curr_mom = curr_mom + row
         seat_window_loop_moms.append(curr_mom)
         seat_window_loop_weights.append(curr_weight)
+    break_points['Aisle Weight'] = curr_weight
 
     seat_fwd = seat_loading_wa(1)
     for row_id, row in enumerate(seat_fwd["moments"]):
@@ -186,12 +205,13 @@ def plotit(mac_range=[0.11, 0.51]):
         curr_mom = curr_mom + row
         seat_window_loop_moms.append(curr_mom)
         seat_window_loop_weights.append(curr_weight)
+    break_points['Middle Weight'] = curr_weight
 
     # Plot Window Loop
     plt.plot(seat_window_loop_moms, seat_window_loop_weights, 'b')
 
 
-
+    print(break_points)
     plt.ylabel("Mass")
     plt.xlabel("Moment (temp)")
     plt.xlim(mac_axes(mac_range[0]-0.01)[0], mac_axes(mac_range[1]+0.01)[0])

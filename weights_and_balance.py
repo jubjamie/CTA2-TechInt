@@ -5,7 +5,7 @@ from openpyxl import load_workbook
 import filepath1
 
 # Excel Sheet Loading
-cg_file_path = filepath1.cad_file_path
+cg_file_path = filepath1.cg_file_path
 cg_file = load_workbook(filename=cg_file_path, data_only=True)
 cg_params = cg_file['CG']  # Load into CG Sheet
 
@@ -52,6 +52,7 @@ big_weights = {"MTOW_w": cg_params["Q4"].value,
                "OWE_w": cg_params["Q23"].value,
                "OWE_m": cg_params["Q22"].value,
                "OWE_x": cg_params["Q24"].value,
+               "MZFW": cg_file["Masses"]["E28"]
                }
 
 ax_lims=[big_weights["OWE_w"]*0.98, big_weights["MTOW_w"]*1.02]
@@ -62,8 +63,32 @@ wing_pos = h0 * c_bar
 seat_start_fwd = 6.304  # m
 seat_start_aft = 21.290  # m
 seat_pitch = 31 * 2.54 / 100
+
+cad_file_path = filepath1.cad_file_path
+cad_file = load_workbook(filename=cad_file_path, data_only=True)
+cad_params = cad_file['Hold Dims']  # Load into CG Sheet
 # Luggage
-front_hold_front = 0  # m
+# Init list holders
+param_name = []
+param_value = []
+
+# Loop helpers
+data_available = True
+data_row_start = 1  # Row where data starts
+
+# Loop through variable names and values, saving to list.
+while data_available is True:
+    # print(cad_params["A"+str(data_row_start)].value)
+    if cad_params["B"+str(data_row_start)].value is not None:
+        param_name.append(cad_params["B"+str(data_row_start)].value)
+        param_value.append(cad_params["C"+str(data_row_start)].value)
+        data_row_start = data_row_start+1
+    else:
+        break
+
+# Zip into a dictionary
+hold_params = dict(zip(param_name, param_value))
+print(hold_params)
 
 
 def mac_x_point(mac_pos, w):

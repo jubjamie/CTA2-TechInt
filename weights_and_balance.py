@@ -323,18 +323,16 @@ def plotit(mac_range=[0.11, 0.51]):
         seat_window_loop_moms.append(curr_mom)
         seat_window_loop_weights.append(curr_weight)
 
-
     # Plot Window Loop
     plt.plot(seat_window_loop_moms, seat_window_loop_weights, 'b')
-
 
     print(break_points)
     plt.ylabel("Mass")
     plt.xlabel("Moment (temp)")
     plt.xlim(mac_axes(mac_range[0]-0.01)[0], mac_axes(mac_range[1]+0.01)[0])
     plt.ylim(ax_lims[0], ax_lims[1])
-    plt.show()
     plt.savefig('vector_plot.png')
+    plt.show()
+
 
 plotit()
-

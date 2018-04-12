@@ -170,7 +170,7 @@ def plotit(mac_range=[0.11, 0.51]):
     break_points['OWE Weight'] = curr_weight
 
     # Plot target pax end point
-    plt.plot(mom_calc((curr_weight+7200), 14.365), (curr_weight+7200), 'ro', markersize=10)
+    plt.plot(mom_calc((curr_weight+7200), cg_params["Q50"].value), (curr_weight+7200), 'ro', markersize=10)
 
     # Plot MZFW and MTOW
     plt.plot([mac_axes(mac_range[0]-0.01)[0], mac_axes(mac_range[1]+0.01)[0]], [big_weights["MTOW_w"], big_weights["MTOW_w"]], 'r')

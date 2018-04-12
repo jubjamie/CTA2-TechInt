@@ -241,6 +241,28 @@ def plotit(mac_range=[0.11, 0.51]):
     # Plot Window Loop
     plt.plot(seat_window_loop_moms, seat_window_loop_weights, 'b')
 
+    # Plot Forward Hold Loop
+    # Forward Case - Treat as point to point mass
+    hold_fwd_case_loop_moms = [curr_mom]
+    hold_fwd_case_loop_weights = [curr_weight]
+    # Fwd hold
+    hold_fwd_centre = np.mean([hold_params["hold_fwd_fwd"], hold_params["hold_fwd_aft"]])
+    hold_fwd_centre_local = (hold_fwd_centre/c_bar) - h0
+    hold_fwd_mom = hold_fwd_centre_local * hold_params["hold_fwd_case_fwd"]
+    curr_mom = curr_mom + hold_fwd_mom
+    curr_weight = curr_weight + hold_params["hold_fwd_case_fwd"]
+    hold_fwd_case_loop_moms.append(curr_mom)
+    hold_fwd_case_loop_weights.append(curr_weight)
+    # Aft
+    hold_aft_centre = np.mean([hold_params["hold_aft_fwd"], hold_params["hold_aft_aft"]])
+    hold_aft_centre_local = (hold_aft_centre / c_bar) - h0
+    hold_aft_mom = hold_aft_centre_local * hold_params["hold_fwd_case_aft"]
+    curr_mom = curr_mom + hold_aft_mom
+    curr_weight = curr_weight + hold_params["hold_fwd_case_aft"]
+    hold_fwd_case_loop_moms.append(curr_mom)
+    hold_fwd_case_loop_weights.append(curr_weight)
+    plt.plot(hold_fwd_case_loop_moms, hold_fwd_case_loop_weights, 'c')
+
     """ Plot the rear loops"""
     curr_weight = big_weights["OWE_w"]
     curr_mom = owe_mom

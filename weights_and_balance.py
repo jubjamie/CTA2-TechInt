@@ -120,11 +120,6 @@ def seat_loading_wa(seats=2, load_dir="fwd"):
         distances.append(local_dist)
         big_dist.append(seat_start_fwd + ((row - 1) * seat_pitch))
         moms.append(pax_mass * local_dist)
-    print(seats)
-    print(big_dist)
-    print(distances)
-    print(moms)
-    print(np.mean(big_dist))
 
     if load_dir.lower() == "aft":
         distances.reverse()
@@ -141,9 +136,6 @@ def to_tons(x, pos):
 
 def to_mac(x, pos):
     return str(int(round(100*(x/ax_lims[0]+0.25)))) + '%'
-
-
-
 
 
 formattery = FuncFormatter(to_tons)
@@ -241,6 +233,7 @@ def plotit(mac_range=[0.11, 0.51]):
     # Plot Window Loop
     plt.plot(seat_window_loop_moms, seat_window_loop_weights, 'b')
 
+    init_mom = curr_mom
     # Plot Forward Hold Loop
     # Forward Case - Treat as point to point mass
     hold_fwd_case_loop_moms = [curr_mom]
@@ -253,6 +246,7 @@ def plotit(mac_range=[0.11, 0.51]):
     curr_weight = curr_weight + hold_params["hold_fwd_case_fwd"]
     hold_fwd_case_loop_moms.append(curr_mom)
     hold_fwd_case_loop_weights.append(curr_weight)
+    break_points["Hold FC Fwd"] = curr_weight
     # Aft
     hold_aft_centre = np.mean([hold_params["hold_aft_fwd"], hold_params["hold_aft_aft"]])
     hold_aft_centre_local = (hold_aft_centre / c_bar) - h0
@@ -261,7 +255,48 @@ def plotit(mac_range=[0.11, 0.51]):
     curr_weight = curr_weight + hold_params["hold_fwd_case_aft"]
     hold_fwd_case_loop_moms.append(curr_mom)
     hold_fwd_case_loop_weights.append(curr_weight)
+    break_points["Hold FC Aft"] = curr_weight
+
+    text_y = break_points["Hold FC Fwd"]
+    text_x = curr_mom
+    bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
+    ax.text(text_x, text_y, "Baggage FC", ha="center", va="center", size=11,
+            bbox=bbox_props)
+
     plt.plot(hold_fwd_case_loop_moms, hold_fwd_case_loop_weights, 'c')
+
+    # Plot Aft Hold Loop
+    # Aft Case - Treat as point to point mass
+    curr_weight = break_points["Middle Weight"]
+    curr_mom = init_mom
+    hold_aft_case_loop_moms = [curr_mom]
+    hold_aft_case_loop_weights = [curr_weight]
+    # Aft hold
+    hold_aft_centre = np.mean([hold_params["hold_aft_fwd"], hold_params["hold_aft_aft"]])
+    hold_aft_centre_local = (hold_aft_centre / c_bar) - h0
+    hold_aft_mom = hold_aft_centre_local * hold_params["hold_aft_case_aft"]
+    curr_mom = curr_mom + hold_aft_mom
+    curr_weight = curr_weight + hold_params["hold_aft_case_aft"]
+    hold_aft_case_loop_moms.append(curr_mom)
+    hold_aft_case_loop_weights.append(curr_weight)
+    break_points["Hold AC Aft"] = curr_weight
+    #Fwd
+    hold_fwd_centre = np.mean([hold_params["hold_fwd_fwd"], hold_params["hold_fwd_aft"]])
+    hold_fwd_centre_local = (hold_fwd_centre / c_bar) - h0
+    hold_fwd_mom = hold_fwd_centre_local * hold_params["hold_aft_case_fwd"]
+    curr_mom = curr_mom + hold_fwd_mom
+    curr_weight = curr_weight + hold_params["hold_aft_case_fwd"]
+    hold_aft_case_loop_moms.append(curr_mom)
+    hold_aft_case_loop_weights.append(curr_weight)
+    break_points["Hold AC Fwd"] = curr_weight
+
+    text_y = break_points["Hold AC Aft"]
+    text_x = curr_mom
+    bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
+    ax.text(text_x, text_y, "Baggage AC", ha="center", va="center", size=11,
+            bbox=bbox_props)
+
+    plt.plot(hold_aft_case_loop_moms, hold_aft_case_loop_weights, 'c')
 
     """ Plot the rear loops"""
     curr_weight = big_weights["OWE_w"]

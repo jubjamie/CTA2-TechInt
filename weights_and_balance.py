@@ -189,8 +189,9 @@ def plotit(mac_range=[0.11, 0.51]):
     seat_fwd = seat_loading_wa(2)
     seat_window_loop_moms = [curr_mom]
     seat_window_loop_weights = [curr_weight]
-    init_mom = curr_mom
 
+    # Window Seats
+    init_mom = curr_mom
     for row_id, row in enumerate(seat_fwd["moments"]):
         curr_weight = curr_weight + seat_fwd["pax mass"]
         curr_mom = curr_mom + row
@@ -198,27 +199,44 @@ def plotit(mac_range=[0.11, 0.51]):
         seat_window_loop_weights.append(curr_weight)
 
     break_points['Window Weight'] = curr_weight
-    # Find mid y
+    # Draw loop label
     text_y = np.mean([break_points["OWE Weight"], curr_weight])
     text_x = np.mean([curr_mom, init_mom])
     bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
     ax.text(text_x, text_y, "Windows", ha="center", va="center", size=15,
             bbox=bbox_props)
 
+    # Aisle Seats
+    init_mom = curr_mom
     for row_id, row in enumerate(seat_fwd["moments"]):
         curr_weight = curr_weight + seat_fwd["pax mass"]
         curr_mom = curr_mom + row
         seat_window_loop_moms.append(curr_mom)
         seat_window_loop_weights.append(curr_weight)
+
     break_points['Aisle Weight'] = curr_weight
+    # Draw loop label
+    text_y = np.mean([break_points["Window Weight"], curr_weight])
+    text_x = np.mean([curr_mom, init_mom])
+    bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
+    ax.text(text_x, text_y, "Aisle", ha="center", va="center", size=15,
+            bbox=bbox_props)
 
     seat_fwd = seat_loading_wa(1)
+    init_mom = curr_mom
     for row_id, row in enumerate(seat_fwd["moments"]):
         curr_weight = curr_weight + seat_fwd["pax mass"]
         curr_mom = curr_mom + row
         seat_window_loop_moms.append(curr_mom)
         seat_window_loop_weights.append(curr_weight)
+
     break_points['Middle Weight'] = curr_weight
+    # Draw loop label
+    text_y = np.mean([break_points["Aisle Weight"], curr_weight])
+    text_x = np.mean([curr_mom, init_mom])
+    bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
+    ax.text(text_x, text_y, "Middle", ha="center", va="center", size=11,
+            bbox=bbox_props)
 
     # Plot Window Loop
     plt.plot(seat_window_loop_moms, seat_window_loop_weights, 'b')

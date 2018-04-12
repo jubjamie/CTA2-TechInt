@@ -334,6 +334,7 @@ def plotit(mac_range=[0.11, 0.51]):
     plt.xlim(mac_axes(mac_range[0]-0.01)[0], mac_axes(mac_range[1]+0.01)[0])
     plt.ylim(ax_lims[0], ax_lims[1])
     plt.show()
+    plt.savefig('vector_plot.png')
 
 plotit()
 

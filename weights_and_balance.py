@@ -258,7 +258,7 @@ def plotit(mac_range=[0.11, 0.51]):
     break_points["Hold FC Aft"] = curr_weight
 
     text_y = break_points["Hold FC Fwd"]
-    text_x = curr_mom
+    text_x = curr_mom - 200
     bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
     ax.text(text_x, text_y, "Baggage FC", ha="center", va="center", size=11,
             bbox=bbox_props)
@@ -291,7 +291,7 @@ def plotit(mac_range=[0.11, 0.51]):
     break_points["Hold AC Fwd"] = curr_weight
 
     text_y = break_points["Hold AC Aft"]
-    text_x = curr_mom
+    text_x = curr_mom + 350
     bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
     ax.text(text_x, text_y, "Baggage AC", ha="center", va="center", size=11,
             bbox=bbox_props)

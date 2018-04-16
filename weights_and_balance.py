@@ -90,6 +90,15 @@ while data_available is True:
 hold_params = dict(zip(param_name, param_value))
 print(hold_params)
 
+fuel_params = cg_file['Fuel']  # Load into Fuel Tank Sheet
+# Luggage
+# Init list holders
+tank_vol = []
+tank_arm = []
+for tank in range(7,23,1):
+    tank_vol.append(fuel_params['F'+str(tank)].value)
+    tank_arm.append(fuel_params['B'+str(tank)])
+
 
 def mac_x_point(mac_pos, w):
     return (mac_pos - 0.25) * w
@@ -127,6 +136,13 @@ def seat_loading_wa(seats=2, load_dir="fwd"):
 
     return {"distances": distances, "moments": moms, "pax mass": pax_mass}
 
+
+def fuel_loading():
+    distances = []
+    moms = []
+    tank_masses = []
+    for tank in range(0, len(tank_vol)-1, 1):
+        local_dist = tank_arm[tank]
 
 
 def to_tons(x, pos):
@@ -298,6 +314,11 @@ def plotit(mac_range=[0.11, 0.51]):
 
     plt.plot(hold_aft_case_loop_moms, hold_aft_case_loop_weights, 'c')
 
+    plt.plot([curr_mom, curr_mom+100], [curr_weight, big_weights["MTOW_w"]], 'g')
+    bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
+    ax.text(curr_mom+350, np.mean([big_weights["MTOW_w"], curr_weight]), "Fuel", ha="center", va="center", size=11,
+            bbox=bbox_props)
+
     """ Plot the rear loops"""
     curr_weight = big_weights["OWE_w"]
     curr_mom = owe_mom
@@ -328,7 +349,7 @@ def plotit(mac_range=[0.11, 0.51]):
 
     print(break_points)
     plt.ylabel("Mass")
-    plt.xlabel("Moment (temp)")
+    plt.xlabel("% MAC")
     plt.xlim(mac_axes(mac_range[0]-0.01)[0], mac_axes(mac_range[1]+0.01)[0])
     plt.ylim(ax_lims[0], ax_lims[1])
     plt.savefig('vector_plot.png')

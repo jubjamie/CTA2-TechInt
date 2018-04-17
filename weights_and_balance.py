@@ -55,7 +55,7 @@ big_weights = {"MTOW_w": cg_params["Q4"].value,
                "MZFW": cg_file["Masses"]["E28"].value
                }
 
-ax_lims=[big_weights["OWE_w"]*0.98, big_weights["MTOW_w"]*1.02]
+ax_lims = [big_weights["OWE_w"]*0.98, big_weights["MTOW_w"]*1.02]
 c_bar = cg_params["M7"].value
 h0 = cg_params["M8"].value
 print(h0)
@@ -416,4 +416,4 @@ def plotit(mac_range=[0.11, 0.51]):
     plt.show()
 
 
-plotit()
+plotit(mac_range=[0.01, 0.43])

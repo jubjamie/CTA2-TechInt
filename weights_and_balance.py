@@ -160,7 +160,7 @@ def fuel_loading():
 
 def tank_pos(ob_dist):
     tank_centre_c_pos = 0.4
-    tank_centre_sweep = np.arctan((0.5-tank_centre_c_pos)/cad_file['Interface-80']['B85'].value)
+    tank_centre_sweep = np.arctan((0.5-tank_centre_c_pos)/(cad_file['Interface-80']['B85'].value/2))
     print("tank sweep: " + str(tank_centre_sweep))
     offset = np.tan(tank_centre_sweep) * ob_dist
     total_pos = offset + cad_file['Sheet2']['R3'].value

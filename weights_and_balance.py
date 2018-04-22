@@ -45,23 +45,23 @@ w_80 = dict(zip(param_name, param_80_w))
 m_80 = dict(zip(param_name, param_80_m))
 x_80 = dict(zip(param_name, param_80_x))
 
-# Add statics
-big_weights = {"MTOW_w": cg_params["Q4"].value,
-               "MTOW_m": cg_params["Q3"].value,
-               "MTOW_x": cg_params["Q5"].value,
-               "OWE_w": cg_params["Q23"].value,
-               "OWE_m": cg_params["Q22"].value,
-               "OWE_x": cg_params["Q24"].value,
-               "MZFW": cg_file["Masses"]["E28"].value
+# Add statics for the 80
+big_weights = {"MTOW_w": cg_params["R4"].value,
+               "MTOW_m": cg_params["R3"].value,
+               "MTOW_x": cg_params["R5"].value,
+               "OWE_w": cg_params["R23"].value,
+               "OWE_m": cg_params["R22"].value,
+               "OWE_x": cg_params["R24"].value,
+               "MZFW": cg_file["Masses"]["F28"].value
                }
 
 ax_lims = [big_weights["OWE_w"]*0.98, big_weights["MTOW_w"]*1.02]
-c_bar = cg_params["M7"].value
-h0 = cg_params["M8"].value
+c_bar = cg_params["N7"].value
+h0 = cg_params["N8"].value
 print(h0)
 wing_pos = h0 * c_bar
 seat_start_fwd = 6.304  # m
-seat_start_aft = 21.290  # m
+seat_start_aft = 21.290-3.1  # m
 seat_pitch = 31 * 2.54 / 100
 
 cad_file_path = filepath1.cad_file_path
@@ -81,7 +81,7 @@ while data_available is True:
     # print(cad_params["A"+str(data_row_start)].value)
     if cad_params["B"+str(data_row_start)].value is not None:
         param_name.append(cad_params["B"+str(data_row_start)].value)
-        param_value.append(cad_params["C"+str(data_row_start)].value)
+        param_value.append(cad_params["D"+str(data_row_start)].value)
         data_row_start = data_row_start+1
     else:
         break
@@ -96,7 +96,7 @@ fuel_params = cg_file['Fuel']  # Load into Fuel Tank Sheet
 tank_vol = []
 tank_arm = []
 fuel_density = fuel_params['F22'].value
-for tank in range(2, 19 ,1):
+for tank in range(2, 19, 1):
     tank_vol.append(fuel_params['F'+str(tank)].value)
     tank_arm.append(fuel_params['B'+str(tank)].value)
 
@@ -128,7 +128,7 @@ def seat_loading_wa(seats=2, load_dir="fwd"):
     moms = []
     big_dist = []
     pax_mass = (95-23) * seats  # For both window seats
-    for row in np.arange(1, 21, 1):
+    for row in np.arange(1, 17, 1):
         local_dist = ((seat_start_fwd + ((row - 1) * seat_pitch))/c_bar) - h0
         distances.append(local_dist)
         big_dist.append(seat_start_fwd + ((row - 1) * seat_pitch))
@@ -160,7 +160,7 @@ def fuel_loading():
 
 def tank_pos(ob_dist):
     tank_centre_c_pos = 0.4
-    tank_centre_sweep = np.arctan((0.5-tank_centre_c_pos)/cad_file['Interface']['B85'].value)
+    tank_centre_sweep = np.arctan((0.5-tank_centre_c_pos)/cad_file['Interface-80']['B85'].value)
     print("tank sweep: " + str(tank_centre_sweep))
     offset = np.tan(tank_centre_sweep) * ob_dist
     total_pos = offset + cad_file['Sheet2']['R3'].value
@@ -199,7 +199,7 @@ def plotit(mac_range=[0.11, 0.51]):
     break_points['OWE Weight'] = curr_weight
 
     # Plot target pax end point
-    plt.plot(mom_calc((curr_weight+7200), cg_params["Q50"].value), (curr_weight+7200), 'ro', markersize=10)
+    plt.plot(mom_calc((curr_weight+5760), cg_params["R50"].value), (curr_weight+5760), 'ro', markersize=10)
 
     # Plot MZFW and MTOW
     plt.plot([mac_axes(mac_range[0]-0.01)[0], mac_axes(mac_range[1]+0.01)[0]], [big_weights["MTOW_w"], big_weights["MTOW_w"]], 'r')

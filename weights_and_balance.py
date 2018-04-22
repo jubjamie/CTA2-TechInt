@@ -308,7 +308,7 @@ def plotit(mac_range=[0.11, 0.51]):
     plt.plot(fuel_loops_moms, fuel_loops_weights, 'g')
 
     text_y = np.mean([break_points["Hold FC Aft"], break_points["Fuel End"]])
-    text_x = curr_mom - 200
+    text_x = curr_mom - 700
     bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
     ax.text(text_x, text_y, "Fuel", ha="center", va="center", size=11,
             bbox=bbox_props)

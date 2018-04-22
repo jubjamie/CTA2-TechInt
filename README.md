@@ -1,4 +1,4 @@
-# CTA2-TechInt
+# CTA2-TechInt (80 Branch)
 CTA2 GBDP Project Technical Integrator Git Repo. This project will include thigs like the weights and balance diagrams.
 
 ## Weights and Balance Plot - CTA2-80

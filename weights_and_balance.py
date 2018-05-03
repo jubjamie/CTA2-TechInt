@@ -96,7 +96,7 @@ fuel_params = cg_file['Fuel']  # Load into Fuel Tank Sheet
 tank_vol = []
 tank_arm = []
 fuel_density = fuel_params['F22'].value
-for tank in range(2, 19 ,1):
+for tank in range(2, 19, 1):
     tank_vol.append(fuel_params['F'+str(tank)].value)
     tank_arm.append(fuel_params['B'+str(tank)].value)
 
@@ -160,7 +160,7 @@ def fuel_loading():
 
 def tank_pos(ob_dist):
     tank_centre_c_pos = 0.4
-    tank_centre_sweep = np.arctan((0.5-tank_centre_c_pos)/(cad_file['Interface']['B85'].value/2))
+    tank_centre_sweep = np.arctan((cad_file['Interface']['B101'].value*(0.5-tank_centre_c_pos))/(cad_file['Interface']['B98'].value/2))  # 0.1*cr/halfspan
     print("tank sweep: " + str(tank_centre_sweep))
     offset = np.tan(tank_centre_sweep) * ob_dist
     total_pos = offset + cad_file['Sheet2']['R3'].value

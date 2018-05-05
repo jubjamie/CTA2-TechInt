@@ -366,6 +366,31 @@ def plotit(mac_range=[0.11, 0.51]):
             bbox=bbox_props)
 
 
+    # Plot Full Loop
+    curr_weight = big_weights["OWE_w"]
+    curr_mom = owe_mom
+    seat_aft = seat_loading_wa(5, load_dir="aft")
+    seat_window_loop_moms = [curr_mom]
+    seat_window_loop_weights = [curr_weight]
+    for row_id, row in enumerate(seat_aft["moments"]):
+        curr_weight = curr_weight + seat_aft["pax mass"]
+        curr_mom = curr_mom + row
+        seat_window_loop_moms.append(curr_mom)
+        seat_window_loop_weights.append(curr_weight)
+    plt.plot(seat_window_loop_moms, seat_window_loop_weights, 'b--')
+    # Plot Full Loop
+    curr_weight = big_weights["OWE_w"]
+    curr_mom = owe_mom
+    seat_aft = seat_loading_wa(5, load_dir="fwd")
+    seat_window_loop_moms = [curr_mom]
+    seat_window_loop_weights = [curr_weight]
+    for row_id, row in enumerate(seat_aft["moments"]):
+        curr_weight = curr_weight + seat_aft["pax mass"]
+        curr_mom = curr_mom + row
+        seat_window_loop_moms.append(curr_mom)
+        seat_window_loop_weights.append(curr_weight)
+    plt.plot(seat_window_loop_moms, seat_window_loop_weights, 'b--')
+
     """ Plot the rear loops"""
     curr_weight = big_weights["OWE_w"]
     curr_mom = owe_mom

@@ -55,7 +55,7 @@ big_weights = {"MTOW_w": cg_params["Q4"].value,
                "MZFW": cg_file["Masses"]["E28"].value
                }
 
-ax_lims = [big_weights["OWE_w"]*0.98, big_weights["MTOW_w"]*1.02]
+ax_lims = [big_weights["OWE_w"]-1000, big_weights["MTOW_w"]*1.02]
 c_bar = cg_params["M7"].value
 h0 = cg_params["M8"].value
 print(h0)
@@ -166,6 +166,12 @@ def tank_pos(ob_dist):
     total_pos = offset + cad_file['Sheet2']['R3'].value
     return total_pos
 
+def noseWheel():
+    nosepos = cad_file['Sheet1']['B30'].value
+    mainpos = cad_file['Sheet1']['B34'].value
+    condition_point = (0.975*(mainpos-nosepos)) + nosepos
+    return condition_point/c_bar
+
 
 def to_tons(x, pos):
     'The two args are the value and tick position'
@@ -173,7 +179,11 @@ def to_tons(x, pos):
 
 
 def to_mac(x, pos):
-    return str(int(round(100*(x/ax_lims[0]+0.25)))) + '%'
+    valf = int(round(100*(x/ax_lims[0]+0.25)))
+    if valf >= 0:
+        return str(valf) + '%'
+    else:
+        return " "
 
 
 formattery = FuncFormatter(to_tons)
@@ -181,7 +191,7 @@ formatterx = FuncFormatter(to_mac)
 
 
 def plotit(mac_range=[0.11, 0.51]):
-    fig = plt.figure(figsize=(10, 7))
+    fig = plt.figure(figsize=(16, 9))
     ax = fig.add_subplot(1, 1, 1)
     ax.yaxis.set_major_formatter(formattery)
     ax.xaxis.set_major_formatter(formatterx)
@@ -196,14 +206,17 @@ def plotit(mac_range=[0.11, 0.51]):
     curr_weight = big_weights["OWE_w"]
     owe_mom = mom_calc(big_weights["OWE_w"], big_weights['OWE_x'])
     plt.plot(owe_mom, curr_weight, 'ro', markersize=10)
+    bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
+    ax.text(owe_mom, curr_weight-500, "OWE", ha="center", va="center", size=11,
+            bbox=bbox_props)
     break_points['OWE Weight'] = curr_weight
 
     # Plot target pax end point
     plt.plot(mom_calc((curr_weight+7200), cg_params["Q50"].value), (curr_weight+7200), 'ro', markersize=10)
 
     # Plot MZFW and MTOW
-    plt.plot([mac_axes(mac_range[0]-0.01)[0], mac_axes(mac_range[1]+0.01)[0]], [big_weights["MTOW_w"], big_weights["MTOW_w"]], 'r')
-    plt.plot([mac_axes(mac_range[0]-0.01)[0], mac_axes(mac_range[1]+0.01)[0]], [big_weights["MZFW"], big_weights["MZFW"]], 'r--')
+    plt.plot([mac_axes(mac_range[0]-0.1)[0], mac_axes(mac_range[1]+0.05)[0]], [big_weights["MTOW_w"], big_weights["MTOW_w"]], 'r', lw=5)
+    plt.plot([mac_axes(mac_range[0]-0.1)[0], mac_axes(mac_range[1]+0.05)[0]], [big_weights["MZFW"], big_weights["MZFW"]], 'r--')
 
     """ This section plots the loops front first"""
     curr_mom = owe_mom
@@ -307,10 +320,10 @@ def plotit(mac_range=[0.11, 0.51]):
 
     plt.plot(fuel_loops_moms, fuel_loops_weights, 'g')
 
-    text_y = np.mean([break_points["Hold FC Aft"], break_points["Fuel End"]])
+    text_y_f = np.mean([break_points["Hold FC Aft"], break_points["Fuel End"]])
     text_x = curr_mom - 700
     bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
-    ax.text(text_x, text_y, "Fuel", ha="center", va="center", size=11,
+    ax.text(text_x, text_y_f, "Fuel", ha="center", va="center", size=11,
             bbox=bbox_props)
 
     # Plot Aft Hold Loop
@@ -359,13 +372,16 @@ def plotit(mac_range=[0.11, 0.51]):
 
     plt.plot(fuel_loops_moms, fuel_loops_weights, 'g')
 
-    text_y = np.mean([break_points["Hold AC Aft"], break_points["Fuel End"]])
-    text_x = curr_mom + 350
+    #get fuel loop basic info for envelopes
+    fuel_x_delta = max(fuel_loops_moms)-min(fuel_loops_moms)
+
+    #text_y = np.mean([break_points["Hold AC Aft"], break_points["Fuel End"]])
+    text_x = curr_mom + 250
     bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
-    ax.text(text_x, text_y, "Fuel", ha="center", va="center", size=11,
+    ax.text(text_x, text_y_f, "Fuel", ha="center", va="center", size=11,
             bbox=bbox_props)
 
-
+    """
     # Plot Full Loop
     curr_weight = big_weights["OWE_w"]
     curr_mom = owe_mom
@@ -390,6 +406,8 @@ def plotit(mac_range=[0.11, 0.51]):
         seat_window_loop_moms.append(curr_mom)
         seat_window_loop_weights.append(curr_weight)
     plt.plot(seat_window_loop_moms, seat_window_loop_weights, 'b--')
+    
+    """
 
     """ Plot the rear loops"""
     curr_weight = big_weights["OWE_w"]
@@ -420,15 +438,37 @@ def plotit(mac_range=[0.11, 0.51]):
     plt.plot(seat_window_loop_moms, seat_window_loop_weights, 'b')
 
     print(break_points)
-    plt.ylabel("Mass")
-    plt.xlabel("% MAC")
-    plt.xlim(mac_axes(mac_range[0]-0.01)[0], mac_axes(mac_range[1]+0.01)[0])
+    plt.ylabel("Mass", size=14)
+    plt.xlabel("% MAC", size=14)
+    plt.xlim(mac_axes(mac_range[0]-0.01)[0], mac_axes(mac_range[1]-0.1)[0])
     ax_lims[1] = break_points["Fuel End"] * 1.02
     plt.ylim(ax_lims[0], ax_lims[1])
 
     """ Plot MAC axes """
+
     mac_spacing = 0.02
     mac_set = np.arange(mac_range[0], mac_range[1], mac_spacing)
+
+    """Plot SC limits"""
+    plt.plot(mac_axes((noseWheel()-h0)+0.25), ax_lims, 'r', zorder=10, lw=5)  # Nose Wheel Reaction
+    ax.text(mac_axes((noseWheel()-h0)+0.25)[0] + 250, big_weights['OWE_w'] + 1400, "Ground Handling Envelope", ha="center",
+            va="center", size=11,
+            bbox=bbox_props, rotation=-120)
+    plt.plot(mac_axes((5.205-h0)+0.25), ax_lims, 'b', zorder=10, lw=5)  # Take-Off Case
+    ax.text(mac_axes((5.205-h0)+0.25)[0] - 250, big_weights['OWE_w'] + 1400, "Ground Handling Envelope", ha="center", va="center", size=11,
+            bbox=bbox_props, rotation=120)
+    plt.plot([mac_axes(0.07)[0], mac_x_point(0.07,big_weights["MZFW"])], [ax_lims[0], big_weights["MZFW"]], 'g', zorder=10, lw=5)  # Landing Case
+    plt.plot([mac_x_point(0.07, big_weights["MZFW"]), mac_x_point(0.07, big_weights["MZFW"]) + (fuel_x_delta*0.9)], [big_weights["MZFW"], big_weights["MTOW_w"]], 'g',
+             zorder=10, lw=5)
+    ax.text(mac_axes(0.07)[0]-50, big_weights['OWE_w'] + 800, "In-Flight Envelope", ha="center", va="center", size=11,
+            bbox=bbox_props, rotation=110)
+
+    bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
+    ax.text(mac_x_point(0.07, big_weights["MZFW"]) + (fuel_x_delta*0.9) - 650, big_weights["MTOW_w"] + 450, "MTOW", ha="center", va="center", size=11,
+            bbox=bbox_props)
+    ax.text(mac_x_point(0.07, big_weights["MZFW"]) + (fuel_x_delta * 0.9) - 950, big_weights["MZFW"] + 450, "MZFW",
+            ha="center", va="center", size=11,
+            bbox=bbox_props)
 
     xtick_hold = []
     for mac_pos in mac_set:
@@ -437,8 +477,10 @@ def plotit(mac_range=[0.11, 0.51]):
         # plt.annotate(mac_pos, [mac_axes(mac_pos)[0], ax_lims[1]-(0.05*(ax_lims[1]-ax_lims[0]))])
     plt.xticks(xtick_hold)
 
+    plt.title("CTA2-100 Weights & Balance Diagram", size=20)
+
     plt.savefig('vector_plot.png')
     plt.show()
 
 
-plotit(mac_range=[0.01, 0.51])
+plotit(mac_range=[-0.07, 0.67])

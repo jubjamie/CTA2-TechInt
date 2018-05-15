@@ -55,7 +55,7 @@ big_weights = {"MTOW_w": cg_params["R4"].value,
                "MZFW": cg_file["Masses"]["F28"].value
                }
 
-ax_lims = [big_weights["OWE_w"]*0.98, big_weights["MTOW_w"]*1.02]
+ax_lims = [16000, big_weights["MTOW_w"]*1.02]
 c_bar = cg_params["N7"].value
 h0 = cg_params["N8"].value
 print(h0)
@@ -213,7 +213,7 @@ def plotit(mac_range=[0.11, 0.51]):
     break_points['OWE Weight'] = curr_weight
 
     # Plot target pax end point
-    plt.plot(mom_calc((curr_weight+5760), cg_params["R50"].value), (curr_weight+5760), 'ro', markersize=10)
+    # plt.plot(mom_calc((curr_weight+5760), cg_params["R50"].value), (curr_weight+5760), 'ro', markersize=10)
 
     # Plot MZFW and MTOW
     plt.plot([mac_axes(mac_range[0]-0.1)[0], mac_axes(mac_range[1]+0.05)[0]], [big_weights["MTOW_w"], big_weights["MTOW_w"]], 'r', lw=5)
@@ -450,16 +450,16 @@ def plotit(mac_range=[0.11, 0.51]):
 
     """Plot SC limits"""
     plt.plot(mac_axes((noseWheel()-h0)+0.25), ax_lims, 'r', zorder=10, lw=5)  # Nose Wheel Reaction
-    ax.text(mac_axes((noseWheel()-h0)+0.25)[0] + 250, big_weights['OWE_w'] + 1400, "Ground Handling Envelope", ha="center",
+    ax.text(mac_axes((noseWheel()-h0)+0.25)[0] + 300, big_weights['OWE_w'] + 1400, "Ground Handling Envelope", ha="center",
             va="center", size=11,
             bbox=bbox_props, rotation=-120)
-    plt.plot(mac_axes((5.205-h0)+0.25), ax_lims, 'b', zorder=10, lw=5)  # Take-Off Case
-    ax.text(mac_axes((5.205-h0)+0.25)[0] - 250, big_weights['OWE_w'] + 1400, "Ground Handling Envelope", ha="center", va="center", size=11,
-            bbox=bbox_props, rotation=120)
+    plt.plot(mac_axes((4.59-h0)+0.25), ax_lims, 'b', zorder=10, lw=5)  # Take-Off Case
+    ax.text(mac_axes((4.59-h0)+0.25)[0] - 300, big_weights['OWE_w'] + 1400, "Ground Handling Envelope", ha="center", va="center", size=11,
+            bbox=bbox_props, rotation=115)
     plt.plot([mac_axes(0.07)[0], mac_x_point(0.07,big_weights["MZFW"])], [ax_lims[0], big_weights["MZFW"]], 'g', zorder=10, lw=5)  # Landing Case
     plt.plot([mac_x_point(0.07, big_weights["MZFW"]), mac_x_point(0.07, big_weights["MZFW"]) + (fuel_x_delta*0.9)], [big_weights["MZFW"], big_weights["MTOW_w"]], 'g',
              zorder=10, lw=5)
-    ax.text(mac_axes(0.07)[0]-50, big_weights['OWE_w'] + 800, "In-Flight Envelope", ha="center", va="center", size=11,
+    ax.text(mac_axes(0.07)[0]-100, big_weights['OWE_w'] + 800, "In-Flight Envelope", ha="center", va="center", size=11,
             bbox=bbox_props, rotation=110)
 
     bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)

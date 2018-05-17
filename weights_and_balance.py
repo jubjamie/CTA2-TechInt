@@ -88,7 +88,7 @@ while data_available is True:
 
 # Zip into a dictionary
 hold_params = dict(zip(param_name, param_value))
-print(hold_params)
+#print(hold_params)
 
 fuel_params = cg_file['Fuel']  # Load into Fuel Tank Sheet
 # Luggage
@@ -100,8 +100,8 @@ for tank in range(2, 19, 1):
     tank_vol.append(fuel_params['F'+str(tank)].value)
     tank_arm.append(fuel_params['B'+str(tank)].value)
 
-print(tank_arm)
-print(tank_vol)
+#print(tank_arm)
+#print(tank_vol)
 
 
 def mac_x_point(mac_pos, w):
@@ -115,10 +115,10 @@ def mac_axes(mac_pos):
 
 
 def mom_calc(w, x):
-    print(x)
-    print(h0)
-    print(x/c_bar)
-    print(((x/c_bar) - h0))
+    #print(x)
+    #print(h0)
+   # print(x/c_bar)
+   # print(((x/c_bar) - h0))
     return w * ((x/c_bar) - h0)
 
 
@@ -212,7 +212,7 @@ def plotit(mac_range=[0.11, 0.51]):
     break_points['OWE Weight'] = curr_weight
 
     # Plot target pax end point
-    plt.plot(mom_calc((curr_weight+7200), cg_params["Q50"].value), (curr_weight+7200), 'ro', markersize=10)
+    # plt.plot(mom_calc((curr_weight+7200), cg_params["Q50"].value), (curr_weight+7200), 'ro', markersize=10)
 
     # Plot MZFW and MTOW
     plt.plot([mac_axes(mac_range[0]-0.1)[0], mac_axes(mac_range[1]+0.05)[0]], [big_weights["MTOW_w"], big_weights["MTOW_w"]], 'r', lw=5)
